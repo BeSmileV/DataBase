@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            transition: background-color 0.5s;
+        }
+
+        body.dimmed {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Центрирует по горизонтали */
+            justify-content: flex-start; /* Выравнивает по вертикали к верху */
+        }
+
+        #sidebar form {
+            margin-bottom: 10px; /* Добавьте желаемый отступ между кнопками */
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            /* Dark background color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allow widgets to wrap to the next line */
+            justify-content: space-between;
+            align-items: flex-start; /* Align widgets to the top of the container */
+            padding: 10px;
+            margin-left: 20px; /* Adjusted left margin */
+            margin-bottom: 20px; /* Added margin between rows */
+        }
+
+        .widget {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 12px; /* Rounded corners */
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+            border: 1px solid #ddd; /* Light border color */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .widget:hover {
+            transform: scale(1.05); /* Enlarge on hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Increase box shadow on hover */
+        }
+
+        .text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .widget:hover .text {
+            opacity: 1;
+        }
+
+        header {
+            background-color: #333; /* Цвет фона заголовка */
+            padding: 10px; /* Внутренний отступ заголовка */
+            color: white; /* Цвет текста заголовка */
+            text-align: center; /* Выравнивание текста по центру */
+            width: 100%; /* Ширина заголовка на 100% ширины родительского контейнера */
+        }
+
+        header h1 {
+            margin: 0; /* Убираем внешние отступы у h1, чтобы избежать дополнительных отступов */
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+    <title>Главная страница</title>
+</head>
+<body>
+
+<div id="sidebar">
+    <p><button id="toggleSidebar" onclick="toggleSidebar()">☰</button></p>
+
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit">Выйти</button>
+    </form>
+
+    <form action="/profile">
+        <button type="submit">Профиль</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+
+
+</div>
+
+    <header>
+        <h1>Главная страница</h1>
+    </header>
+
+<div id="content">
+    <div class="container">
+    </div>
+    <div class="container">
+        {% for item in data_list_of_devices %}
+        <form id="form{{ loop.index }}" method="post" action="/device">
+            <input type="hidden" name="deviceId" value="{{ item[0] }}">
+            <div class="widget" onclick="submitForm({{ loop.index }})">
+                <img src="data:image/jpeg;base64,{{item[2]}}" style="max-width:100%; max-height:100%;" alt="Image"/>
+                <div class="text">{{ item[1] }}</div>
+            </div>
+
+        </form>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+
+    function toggleDevice(deviceId) {
+        var dataToSend = { deviceId: deviceId };
+
+        fetch('/device', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ответ от сервера:', data);
+                // Обрабатывайте ответ от сервера по вашему усмотрению
+            })
+            .catch(error => {
+                console.error('Ошибка при отправке запроса:', error);
+            });
+    }
+
+    function submitForm(index) {
+        document.forms['form' + index].submit();
+    }
+</script>
+</body>
+</html>
+
+

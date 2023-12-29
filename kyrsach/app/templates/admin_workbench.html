@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            transition: margin-left 0.5s;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        .widget-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+            padding: 20px;
+            text-align: center;
+            width: 80%;
+            transition: margin-left 0.5s;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border: 2px solid #333;
+        }
+
+        th {
+            background-color: #333;
+            color: #ddd;
+            border: 2px solid #333;
+            font-weight: bold;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        .role-actions,
+        .device-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions button {
+            margin-right: 5px;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #sidebar button {
+            margin-bottom: 5px;
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        #shopEditorForm,
+        #shopCreatorForm,
+        #deviceEditorForm,
+        #deviceCreatorForm {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.5s, transform 0.5s;
+            opacity: 0;
+            border: 2px solid #333;
+            z-index: 3;
+        }
+
+        #shopEditorForm.visible,
+        #shopCreatorForm.visible,
+        #deviceEditorForm.visible,
+        #deviceCreatorForm.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scaleY(1);
+        }
+
+        /* Form labels */
+        #shopEditorForm label,
+        #shopCreatorForm label,
+        #deviceEditorForm label,
+        #deviceCreatorForm label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Form input fields */
+        #shopEditorForm input,
+        #shopCreatorForm input,
+        #deviceEditorForm input,
+        #deviceCreatorForm input,
+        #shopEditorForm textarea,
+        #shopCreatorForm textarea,
+        #deviceEditorForm textarea,
+        #deviceCreatorForm textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Form buttons */
+        #shopEditorForm button,
+        #shopCreatorForm button,
+        #deviceEditorForm button,
+        #deviceCreatorForm button {
+            width: auto;
+            padding: 12px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #shopEditorForm button:hover,
+        #shopCreatorForm button:hover,
+        #deviceEditorForm button:hover,
+        #deviceCreatorForm button:hover {
+            background-color: #555;
+        }
+
+        /* Form container */
+        #shopEditorForm,
+        #shopCreatorForm,
+        #deviceEditorForm,
+        #deviceCreatorForm {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+        }
+
+        /* Additional styling for specific forms */
+        #shopEditorForm h2,
+        #shopCreatorForm h2,
+        #deviceEditorForm h2,
+        #deviceCreatorForm h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        /* Additional styling for Bootstrap */
+        #roleTable {
+            width: 80%;
+            margin-top: 20px;
+            margin: 0 auto;
+        }
+
+        /* Additional styling for Bootstrap */
+        #roleTable th,
+        #roleTable td {
+            text-align: center;
+        }
+
+        .add-role-form {
+            margin-top: 20px;
+            width: 50%;
+        }
+
+        .add-role-form label {
+            font-weight: normal;
+            color: #333;
+        }
+
+        .add-role-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin: auto;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 300px; /* или другое значение, в зависимости от ваших предпочтений */
+        }
+
+        .add-role-form button {
+            margin-top: 10px;
+        }
+
+        .get-selection-form {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        .get-selection-form h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .get-selection-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .get-selection-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .get-selection-form button {
+            width: 120px;
+            padding: 12px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .get-selection-form button:hover {
+            background-color: #555;
+        }
+    </style>
+    <title>Special Admin Features</title>
+</head>
+
+<body>
+<div id="sidebar">
+    <p>
+        <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+    </p>
+
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit">Выйти</button>
+    </form>
+    <form action="/profile">
+        <button type="submit">Профиль</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+</div>
+
+<header>
+    <h1>Special Admin Features</h1>
+</header>
+
+<div id="content">
+
+    <div class="widget-container">
+        <h2>Список магазинов</h2>
+        <table id="shopTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Place</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for shop in shops_data %}
+            <tr>
+                <td>{{ shop[0] }}</td>
+                <td>{{ shop[1] }}</td>
+                <td>{{ shop[2] }}</td>
+                <td class="shop-actions actions">
+                    <button id="changeButton" onclick="showShopEditorForm({{ shop[0] }})">Изменить</button>
+                    <form action="/delete_shop" method="post">
+                        <input type="hidden" id="shop_id" name="shop_id" value="{{ shop[0] }}">
+                        <button type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button id="showShopCreatorFormButton" onclick="showShopCreatorForm()">Добавить магазин</button>
+    </div>
+
+    <div id="shopEditorForm">
+        <h2>Добавить магазин</h2>
+        <form id="addShopEditorForm" action="/edit_shop" method="post">
+            <label id="curEditedShopId"></label>
+            <br>
+            <input type="hidden" id="edited_shop_id" name="edited_shop_id">
+            <label for="edited_shop_name">Название: </label>
+            <input id="edited_shop_name" name="edited_shop_name" required>
+            <br>
+            <label for="PlaceTextShopEditor">Место: </label>
+            <textarea id="PlaceTextShopEditor" name="edited_shop_place" rows="4" cols="50" required></textarea>
+            <br>
+            <button type="submit" class="buy-button">Отправить</button>
+        </form>
+    </div>
+
+    <div id="shopCreatorForm">
+        <h2>Добавить магазин</h2>
+        <form id="addShopCreatorForm" action="/create_shop" method="post">
+            <label for="new_shop_name">Название: </label>
+            <input id="new_shop_name" name="new_shop_name" required>
+            <br>
+            <label for="PlaceTextShopCreator">Место: </label>
+            <textarea id="PlaceTextShopCreator" name="new_shop_place" rows="4" cols="50" required></textarea>
+            <br>
+            <button type="submit" class="buy-button">Отправить</button>
+        </form>
+    </div>
+
+    <div class="widget-container">
+        <h2>Список девайсов</h2>
+        <table id="devicesTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Device Type ID</th>
+                <th>Description</th>
+                <th>Image ID</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for device in devices_data %}
+            <tr>
+                <td>{{ device[0] }}</td>
+                <td>{{ device[1] }}</td>
+                <td>{{ device[2] }}</td>
+                <td>{{ device[3] }}</td>
+                <td>{{ device[4] }}</td>
+                <td class="device-actions actions">
+                    <button onclick="showDeviceEditorForm({{ device[0] }})">Изменить</button>
+                    <form action="/delete_device" method="post">
+                        <input type="hidden" id="device_id" name="device_id" value="{{ device[0] }}">
+                        <button type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button id="showDeviceCreatorFormButton" onclick="showDeviceCreatorForm()">Добавить девайса</button>
+    </div>
+
+    <div id="deviceEditorForm">
+        <h2>Изменить девайс</h2>
+        <form id="addDeviceEditorForm" action="/edit_device" method="post" enctype="multipart/form-data">
+            <label id="curEditedDeviceId"></label>
+            <br>
+
+            <input type="hidden" id="edited_device_id" name="edited_device_id">
+
+            <label for="edited_device_name">Название: </label>
+            <input id="edited_device_name" name="edited_device_name" required>
+            <br>
+
+            <label for="edited_device_type">Тип девайса: </label>
+            <input id="edited_device_type" name="edited_device_type" required>
+            <br>
+
+            <label for="edited_device_description">Описание: </label>
+            <textarea id="edited_device_description" name="edited_device_description" rows="4" cols="50"
+                      required></textarea>
+            <br>
+
+            <label for="edited_device_image">Изображение: </label>
+            <input id="edited_device_image" type="file" name="edited_device_image" accept="image/*" required>
+            <button type="submit" class="buy-button">Отправить</button>
+        </form>
+    </div>
+
+    <div id="deviceCreatorForm">
+        <h2>Добавить девайс</h2>
+        <form id="addDeviceCreatorForm" action="/create_device" method="post" enctype="multipart/form-data">
+            <label for="new_device_name">Название: </label>
+            <input id="new_device_name" name="new_device_name" required>
+            <br>
+
+            <label for="new_device_device_type">Тип девайса: </label>
+            <input id="new_device_device_type" name="new_device_device_type" required>
+            <br>
+
+            <label for="new_device_description">Описание: </label>
+            <textarea id="new_device_description" name="new_device_description" rows="4" cols="50" required></textarea>
+            <br>
+
+            <label for="new_device_image">Изображение: </label>
+            <input id="new_device_image" type="file" name="new_device_image" accept="image/*" required>
+            <button type="submit" class="buy-button">Отправить</button>
+        </form>
+    </div>
+
+    <div class="widget-container">
+        <h2>Список ролей</h2>
+        <table id="roleTable" class="table table-bordered table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for role in roles_data %}
+            <tr>
+                <td>{{ role[0] }}</td>
+                <td>{{ role[1] }}</td>
+                <td class="role-actions">
+                    <form action="/delete_role" method="post">
+                        <input type="hidden" id="role_id" name="role_id" value="{{ role[0] }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <form action="/add_role" method="post" class="add-role-form">
+            <div class="form-group">
+                <label for="role_name">Название роли: </label>
+                <input id="role_name" name="role_name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Добавить роль</button>
+        </form>
+    </div>
+
+    <div class="widget-container">
+        <h2>Выгрузка данных</h2>
+        <form action="/get_selection" method="post" class="get-selection-form">
+            <div class="form-group">
+                <label for="chooseOptionFileType">Тип файла:</label>
+                <select id="chooseOptionFileType" name="chooseOptionFileType" required>
+                    <option value="0">Json</option>
+                    <option value="1">XLSX</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="chooseOptionClass">Выбор таблицы Базы Данных:</label>
+                <select id="chooseOptionClass" name="chooseOptionClass" required>
+                    <option value="0">Users</option>
+                    <option value="1">Role</option>
+                    <option value="2">Device</option>
+                    <option value="3">DeviceType</option>
+                    <option value="4">Order</option>
+                    <option value="5">Shop</option>
+                    <option value="6">Image</option>
+                    <option value="7">DeviceRating</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Выгрузить данные</button>
+        </form>
+    </div>
+
+    <div class="widget-container">
+        <h2>Backup</h2>
+        <form action="/do_backup" method="post" class="do-backup-form">
+            <button type="submit" class="btn btn-primary">Сделать Backup</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+
+    function showShopEditorForm(shopID) {
+        var shopEditorForm = document.getElementById("shopEditorForm");
+        document.getElementById("curEditedShopId").innerHTML = "ID: " + shopID;
+        document.getElementById("edited_shop_id").value = shopID;
+
+        if (!shopEditorForm.classList.contains("visible")) {
+            shopEditorForm.style.display = "block";
+            setTimeout(function() {
+                shopEditorForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    function showDeviceEditorForm(deviceID) {
+        var deviceEditorForm = document.getElementById("deviceEditorForm");
+        document.getElementById("curEditedDeviceId").innerHTML = "ID: " + deviceID;
+        document.getElementById("edited_device_id").value = deviceID;
+
+        if (!deviceEditorForm.classList.contains("visible")) {
+            deviceEditorForm.style.display = "block";
+            setTimeout(function() {
+                deviceEditorForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    function showShopCreatorForm() {
+        var shopCreatorForm = document.getElementById("shopCreatorForm");
+
+        if (!shopCreatorForm.classList.contains("visible")) {
+            shopCreatorForm.style.display = "block";
+            setTimeout(function() {
+                shopCreatorForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    function showDeviceCreatorForm() {
+        var deviceCreatorForm = document.getElementById("deviceCreatorForm");
+
+        if (!deviceCreatorForm.classList.contains("visible")) {
+            deviceCreatorForm.style.display = "block";
+            setTimeout(function() {
+                deviceCreatorForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    window.onclick = function(event) {
+        var shopEditorForm = document.getElementById('shopEditorForm');
+        var shopTable = document.getElementById('shopTable');
+        if (event.target != shopTable && !shopTable.contains(event.target)
+         && event.target != shopEditorForm && !shopEditorForm.contains(event.target)) {
+            shopEditorForm.classList.remove("visible");
+            setTimeout(function() {
+                shopEditorForm.style.display = "none";
+            }, 500);
+        }
+
+        var shopCreatorForm = document.getElementById('shopCreatorForm');
+        var showShopCreatorFormButton = document.getElementById('showShopCreatorFormButton');
+        if (event.target != showShopCreatorFormButton
+         && event.target != shopCreatorForm && !shopCreatorForm.contains(event.target)) {
+            shopCreatorForm.classList.remove("visible");
+            setTimeout(function() {
+                shopCreatorForm.style.display = "none";
+            }, 500);
+        }
+
+        var deviceCreatorForm = document.getElementById('deviceCreatorForm');
+        var showDeviceCreatorFormButton = document.getElementById('showDeviceCreatorFormButton');
+        if (event.target != showDeviceCreatorFormButton
+         && event.target != deviceCreatorForm && !deviceCreatorForm.contains(event.target)) {
+            deviceCreatorForm.classList.remove("visible");
+            setTimeout(function() {
+                deviceCreatorForm.style.display = "none";
+            }, 500);
+        }
+
+        var deviceEditorForm = document.getElementById('deviceEditorForm');
+        var devicesTable = document.getElementById('devicesTable');
+        if (event.target != devicesTable && !devicesTable.contains(event.target)
+         && event.target != deviceEditorForm && !deviceEditorForm.contains(event.target)) {
+            deviceEditorForm.classList.remove("visible");
+            setTimeout(function() {
+                deviceEditorForm.style.display = "none";
+            }, 500);
+        }
+    }
+</script>
+
+</body>
+
+</html>

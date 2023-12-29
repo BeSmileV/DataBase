@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #sidebar button {
+            margin-bottom: 5px;
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px; /* Add this line to apply rounded borders */
+            overflow: hidden; /* Add this line to hide the rounded corners outside the border */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border: 2px solid #333;
+        }
+
+        th {
+            background-color: #333;
+            color: #ddd;
+            border: 2px solid #333; /* Make the header border thicker */
+            font-weight: bold; /* Make the text in headers bold for better visibility */
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #editForm {
+            display: none;
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #editForm label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        #editForm input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #editForm button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #editForm button:hover {
+            background-color: #555;
+        }
+
+        #warehousePosCreatorForm {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.5s, transform 0.5s;
+            opacity: 0;
+            border: 2px solid #333;
+            z-index: 3;
+        }
+
+        #warehousePosCreatorForm.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scaleY(1);
+        }
+
+        /* Form labels */
+        #warehousePosCreatorForm label{
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Form input fields */
+        #warehousePosCreatorForm input{
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    <title>Склад</title>
+</head>
+
+<body>
+
+<div id="sidebar">
+    <p>
+        <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+    </p>
+
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit">Выйти</button>
+    </form>
+    <form action="/profile">
+        <button type="submit">Профиль</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+</div>
+
+<header>
+    <h1>Сервис для продавцов</h1>
+</header>
+
+<div id="content">
+    <h2>Изменение объема позиции склада</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Наименование устройства</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th>Действия</th>
+        </tr>
+
+        {% for item in warehouse_data %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+            <td>
+                <button onclick="editRow('{{ item[0] }}', '{{ item[2] }}', '{{ item[3] }}')">Изменить</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button id="showWarehousePosCreatorForm" onclick="showWarehousePosCreatorForm()">Добавить позицию склада</button>
+
+    <div id="warehousePosCreatorForm">
+        <h2>Добавить позицию склада</h2>
+         <form id="addForm" action="/add_warehouse" method="post">
+        <label for="addName">Название девайса:</label>
+        <input id="addName" name="add_name" required>
+        <label for="addPrice">Цену:</label>
+        <input id="addPrice" name="add_price" required>
+        <br>
+        <label for="addCount">Количество:</label>
+        <input id="addCount" name="add_count" required>
+        <br>
+
+        <input type="hidden" id="addShopId" name="add_shop_id" value={{shop_id}}>
+
+        <button type="submit">Добавить</button>
+    </form>
+    </div>
+
+    <form id="editForm" style="display: none;" action="/edit_warehouse" method="post">
+        <label id="FormID"></label>
+        <br>
+        <input type="hidden" id="editedId" name="id">
+        <label for="editedPrice">Изменить цену:</label>
+        <input type="number" id="editedPrice" name="price" required>
+        <br>
+        <label for="editedCount">Изменить количество:</label>
+        <input type="number" id="editedCount" name="count" required>
+        <br>
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <h2>Заказы</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название устройства</th>
+            <th>Цена</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Имя пользователя</th>
+            <th>Адрес отправки</th>
+            <th>Действия</th>
+        </tr>
+        <!-- Replace the data with the actual data from Flask for orders -->
+        {% for order in orders_data %}
+        <tr>
+            <td>{{ order[0] }}</td>
+            <td>{{ order[1] }}</td>
+            <td>{{ order[2] }}</td>
+            <td>{{ order[3] }}</td>
+            <td>{{ "Отправлен" if order[4] else "Заказ ожидает отправки" }}</td>
+            <td>{{ order[5] }}</td>
+            <td>{{ order[6] }}</td>
+            <td>
+                {% if not order[4] %}
+                <form id="sendOrderForm" action="/send_order" method="post">
+                    <input type="hidden" name="order_id" value="{{ order[0] }}">
+                    <button type="submit">Отправить заказ</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+
+    function editRow(id, price, count) {
+        document.getElementById("editedId").value = id;
+        document.getElementById("editedPrice").value = price;
+        document.getElementById("editedCount").value = count;
+        document.getElementById("FormID").innerHTML = "ID: " + id;
+        if (document.getElementById("editForm").style.display == "block"){
+            document.getElementById("editForm").style.display = "none";
+        } else {
+            document.getElementById("editForm").style.display = "block";
+        }
+    }
+
+    function showWarehousePosCreatorForm() {
+        var warehousePosCreatorForm = document.getElementById("warehousePosCreatorForm");
+
+        if (!warehousePosCreatorForm.classList.contains("visible")) {
+            warehousePosCreatorForm.style.display = "block";
+            setTimeout(function() {
+                warehousePosCreatorForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    window.onclick = function(event) {
+        var warehousePosCreatorForm = document.getElementById('warehousePosCreatorForm');
+        var showWarehousePosCreatorForm = document.getElementById('showWarehousePosCreatorForm');
+        if (event.target != showWarehousePosCreatorForm
+         && event.target != warehousePosCreatorForm && !warehousePosCreatorForm.contains(event.target)) {
+            warehousePosCreatorForm.classList.remove("visible");
+            setTimeout(function() {
+                warehousePosCreatorForm.style.display = "none";
+            }, 500);
+        }
+    }
+</script>
+</body>
+
+</html>

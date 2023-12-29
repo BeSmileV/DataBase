@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            transition: background-color 0.5s;
+        }
+
+        body.dimmed {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 10;
+        }
+
+        #sidebar form {
+            margin-bottom: 10px;
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        .device-container {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            transition: transform 0.5s;
+            position: relative;
+        }
+
+        .device-container.enlarged {
+            transform: scale(1.2);
+            z-index: 2;
+        }
+
+        .device-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            transition: 0.5s;
+        }
+
+        .device-image:hover {
+            transform: scale(1.2);
+            z-index: 2;
+        }
+
+        .device-info {
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .device-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .device-type {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .device-description {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .comments-section {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .comments-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .shops-section {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .shops-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .shop-info {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .buy-section {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .buy-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .sidebar-button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .sidebar-button:hover {
+            background-color: #555;
+        }
+
+        #addCommentForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #commentForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.5s, transform 0.5s;
+            opacity: 0;
+            transform-origin: top;
+            border: 2px solid #333; /* Обводка */
+            z-index: 3;
+        }
+
+        #commentForm.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scaleY(1);
+        }
+
+        #addCommentButton {
+            width: 120px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #addCommentButton:hover {
+            background-color: #555;
+        }
+
+        #rating {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #333; /* Обводка */
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #commentText {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #333; /* Обводка */
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+    <title>Девайс</title>
+</head>
+
+<body>
+
+<button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+
+<div id="sidebar">
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit">Выйти</button>
+    </form>
+    <form action="/profile">
+        <button type="submit">Профиль</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+</div>
+
+<header>
+    <h1>{{device_name}}</h1>
+</header>
+
+<div id="content">
+    <div class="device-container" onmouseover="toggleEnlarged(true)" onmouseout="toggleEnlarged(false)">
+        <img class="device-image" src="data:image/jpeg;base64,{{device_img}}" alt="Device Image"/>
+        <div class="device-info">
+            <div class="device-title">{{device_name}}</div>
+            <div class="device-type"><b>Тип устройства:</b> {{device_type}}</div>
+            <div class="device-description"><b>Описание:</b> {{device_description}}</div>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <div class="comments-title">Комментарии</div>
+        {% for item in comments_data %}
+        <div class="comment">
+            <em><b>Пользователь</b> : {{item[2]}}</em><br>
+            <em><b>Оценка</b> : {{item[0]}}</em><br>
+            <em><b>Комментарий</b> : {{item[1]}}</em>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="shops-section">
+        <div class="shops-title">Магазины</div>
+        {% for item in shops_data %}
+        <div class="shop-info">
+            <em><b>Название магазина</b> : {{item[3]}}</em><br>
+            <em><b>Расположение</b> : {{item[4]}}</em><br>
+            <em><b>Цена</b> : {{item[1]}}</em><br>
+            <em><b>Количество</b> : {{item[2]}}</em>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="buy-section">
+        <form action="/buy_device" method="post">
+            <select name="shop_id_price_device_id" class="dropdown">
+                {% for item in shops_data %}
+                <option value="{{ item[0] }}|{{ item[1] }}|{{ device_id }}">{{ item[3] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="buy-button">Купить</button>
+        </form>
+    </div>
+
+    <div id="commentForm">
+        <h2>Добавить комментарий</h2>
+        <form id="addCommentForm" action="/submit_comment" method="post">
+            <label for="rating">Оценка:</label>
+            <select id="rating" name="rating" class="dropdown">
+                {% for i in range(1, 11) %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select><br>
+            <label for="commentText">Комментарий:</label>
+            <textarea id="commentText" name="commentText" rows="4" cols="50" required></textarea>
+            <br>
+            <input type="hidden" id="deviceId" name="deviceId" value="{{ device_id }}">
+            <button type="submit" class="buy-button">Отправить</button>
+        </form>
+    </div>
+
+    <button id="addCommentButton" onclick="showCommentForm()"
+            {% if not isLogin%}
+            style="display: none;"
+            {% endif %}>
+        Добавить комментарий
+    </button>
+
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+
+    function toggleEnlarged(enlarge) {
+        var body = document.body;
+        var deviceContainer = document.querySelector('.device-container');
+
+        if (enlarge) {
+            body.classList.add('dimmed');
+            deviceContainer.classList.add('enlarged');
+        } else {
+            body.classList.remove('dimmed');
+            deviceContainer.classList.remove('enlarged');
+        }
+    }
+
+    function showCommentForm() {
+        var commentForm = document.getElementById("commentForm");
+
+        if (!commentForm.classList.contains("visible")) {
+            commentForm.style.display = "block";
+            setTimeout(function() {
+                commentForm.classList.add("visible");
+            }, 10);
+        }
+    }
+
+    window.onclick = function(event) {
+        var commentForm = document.getElementById('commentForm');
+        var addButton = document.getElementById("addCommentButton");
+        if (event.target != commentForm && event.target != addButton && !commentForm.contains(event.target)) {
+            commentForm.classList.remove("visible");
+            setTimeout(function() {
+                commentForm.style.display = "none";
+            }, 500);
+        }
+    }
+</script>
+</body>
+</html>
+

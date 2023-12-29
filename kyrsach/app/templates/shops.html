@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            transition: margin-left 0.5s;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        .shop-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .shop-card h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 150px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .comments-container {
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 10px;
+            position: absolute;
+            top: 120%;
+            left: 0;
+            width: 100%;
+            display: none;
+            background-color: #fff;
+            z-index: 1;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .comments-container p {
+            margin: 0;
+        }
+
+        .empty-message {
+            color: #555;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #sidebar form {
+            margin-bottom: 10px;
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        #sidebar.open {
+            width: 250px;
+        }
+
+        body.open-sidebar {
+            margin-left: 250px;
+        }
+
+        #content.open-sidebar {
+            margin-left: 250px;
+        }
+    </style>
+    <title>Shops and Comments</title>
+</head>
+
+<body>
+<button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+
+<div id="sidebar">
+    <form action="/">
+        <button type="submit" class="sidebar-button">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit" class="sidebar-button">Выйти</button>
+    </form>
+    <form action="/profile">
+        <button type="submit">Профиль</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit" class="sidebar-button">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit" class="sidebar-button">Специальные возможности</button>
+    </form>
+</div>
+
+<header>
+    <h1>Shops</h1>
+</header>
+
+<div id="content">
+    {% if shops_data %}
+    {% for shop in shops_data %}
+    <div class="shop-card">
+        <h2>{{ shop[1] }}</h2>
+        <p><strong>Shop ID:</strong> {{ shop[0] }}</p>
+        <p><strong>Shop Place:</strong> {{ shop[2] }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="empty-message">Нет доступных магазинов.</p>
+    {% endif %}
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var body = document.body;
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+</script>
+</body>
+
+</html>

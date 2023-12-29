@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            transition: background-color 0.5s;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .comments-container {
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 10px;
+            position: absolute;
+            top: 120%;
+            left: 0;
+            width: 100%;
+            display: none;
+            background-color: #fff;
+            z-index: 1;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .comments-container p {
+            margin: 0;
+        }
+
+        .empty-message {
+            color: #555;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Центрирует по горизонтали */
+            justify-content: flex-start; /* Выравнивает по вертикали к верху */
+        }
+
+        #sidebar form {
+            margin-bottom: 10px; /* Добавьте желаемый отступ между кнопками */
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            /* Dark background color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allow widgets to wrap to the next line */
+            justify-content: space-between;
+            align-items: flex-start; /* Align widgets to the top of the container */
+            padding: 10px;
+            margin-left: 20px; /* Adjusted left margin */
+            margin-bottom: 20px; /* Added margin between rows */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px; /* Add this line to apply rounded borders */
+            overflow: hidden; /* Add this line to hide the rounded corners outside the border */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border: 2px solid #333;
+        }
+
+        th {
+            background-color: #333;
+            color: #ddd;
+            border: 2px solid #333; /* Make the header border thicker */
+            font-weight: bold; /* Make the text in headers bold for better visibility */
+        }
+
+        #userInformation,
+        #orders {
+            width: 80%;
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        span {
+            font-weight: bold;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #change_place {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #change_place h2 {
+            color: #333;
+        }
+
+        #change_place form {
+            margin-top: 20px;
+        }
+
+        #change_place input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        #change_place button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #change_place button:hover {
+            background-color: #555;
+        }
+    </style>
+    <title>Shops and Comments</title>
+</head>
+
+<body>
+
+<button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+
+<div id="sidebar">
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    {% if isLogin %}
+    <form action="/logout">
+        <button type="submit">Выйти</button>
+    </form>
+    {% else %}
+    <form action="/login" method="get">
+        <button type="submit">Войти</button>
+    </form>
+    {% endif %}
+
+    <form action="/shops">
+        <button type="submit">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+</div>
+
+
+<header>
+    <h1>{{user_fsc}}</h1>
+
+</header>
+
+<div id="content">
+    <div id="userInformation">
+        <h2>Сведения о пользователе</h2>
+        <p>Id: <span>{{user_data[0]}}</span></p>
+        <p>Имя: <span>{{user_data[1]}}</span></p>
+        <p>Login: <span>{{user_data[2]}}</span></p>
+        <p>Password: <span>{{user_data[3]}}</span></p>
+        <p>Роль ID: <span>{{user_data[4]}}</span></p>
+        {% if user_data[5] %}
+        <p>Принадлежность магазину: <span>{{ user_data[5] }} </span></p>
+        {% endif %}
+
+        {% if user_data[6] %}
+        <p>Место: <span>{{ user_data[6] }} </span></p>
+        {% endif %}
+
+    </div>
+
+    <div id="orders">
+        <h2>Заказы</h2>
+        <table id="orderTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Place</th>
+                <th>Shop Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for order in orders_data %}
+            <tr>
+                <td>{{ order[0] }}</td>
+                <td>{{ order[1] }}</td>
+                <td>{{ order[2] }}</td>
+                <td>{{ order[3] }}</td>
+                <td>{{ "Отправлен" if order[4] else "Заказ ожидает отправки" }}</td>
+                <td>{{ order[5] }}</td>
+                <td>{{ order[6] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="change_place">
+        <h2>Изменение места отправки</h2>
+        <form action="/add_place" method="post">
+            <input name="new_place" required>
+            <br>
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            margin-top: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        #toggleSidebar {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 0.5s;
+            opacity: 0.7;
+            z-index: 2;
+        }
+
+        #toggleSidebar:hover {
+            opacity: 1;
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            padding: 8px;
+            margin-bottom: 15px;
+            width: 200px;
+            box-sizing: border-box;
+        }
+
+        .additional-fields {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+    <title>Registration</title>
+</head>
+
+<body>
+
+<div id="sidebar">
+    <p>
+        <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+    </p>
+
+    <form action="/">
+        <button type="submit">На главную</button>
+    </form>
+
+    <form action="/shops" >
+        <button type="submit" class="sidebar-button">Магазины</button>
+    </form>
+
+    <form action="/special_actions">
+        <button type="submit">Специальные возможности</button>
+    </form>
+</div>
+
+<header>
+    <h1>Регистрация</h1>
+</header>
+
+<div id="content">
+    <h2>Регистрация</h2>
+    <form method="post" action="{{ url_for('register') }}">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="fsc" required>
+        <br>
+        <label for="username">Логин:</label>
+        <input type="text" id="username" name="login" required>
+        <br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="button" onclick="toggleAdditionalFields()">Дополнительные поля</button>
+        <div class="additional-fields" id="additionalFields">
+            <label for="role">Роль:</label>
+            <select id="role" name="role_id">
+                <option value="None">не выбрано</option>
+                <!-- Populate roles dynamically from server data -->
+                {% for role in roles %}
+                <option value="{{ role[0] }}">{{ role[1] }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label for="store">Магазин:</label>
+            <select id="store" name="shop_id">
+                <option value="None">не выбрано</option>
+                <!-- Populate stores dynamically from server data -->
+                {% for store in stores %}
+                <option value="{{ store[0] }}">{{ store[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+</div>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
+        var toggleButton = document.getElementById("toggleSidebar");
+
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+            content.style.marginLeft = "0";
+            toggleButton.style.left = "10px";
+        } else {
+            sidebar.style.width = "250px";
+            content.style.marginLeft = "250px";
+            toggleButton.style.left = "260px";
+        }
+    }
+
+    function toggleAdditionalFields() {
+        var additionalFields = document.getElementById("additionalFields");
+        if (additionalFields.style.maxHeight) {
+            additionalFields.style.maxHeight = null;
+        } else {
+            additionalFields.style.maxHeight = additionalFields.scrollHeight + "px";
+        }
+    }
+</script>
+</body>
+
+</html>
